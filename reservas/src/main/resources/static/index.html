@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel - Catálogo de Hospedaje</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">🏨 Hotel</a>
+            <ul class="nav-menu">
+                <li><a href="#catalogo">Catálogo</a></li>
+                <li><a href="#lista-reservas">Ver Reservas</a></li>
+                <li><a href="/swagger-ui/index.html" target="_blank" class="btn-swagger">API Docs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <section id="catalogo" class="margin-section">
+            <div class="catalogo-header">
+                <div>
+                    <span class="subtitle">CATÁLOGO DE HOSPEDAJE</span>
+                    <h2>Hoteles disponibles para reservar</h2>
+                </div>
+                <div class="filtros">
+                    <button class="btn-filtro active">Nacionales</button>
+                    <button class="btn-filtro">Internacionales</button>
+                </div>
+            </div>
+
+            <div class="hotel-grid">
+                <div class="hotel-card">
+                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600" alt="Acapulco Mar Azul">
+                    <div class="card-body">
+                        <h3>Acapulco Mar Azul</h3>
+                        <p class="location">Acapulco, Guerrero</p>
+                        <div class="rating"><span class="badge-rating">8.0</span> ★★★★★</div>
+                        <p class="price-info">1 noche, 2 personas desde</p>
+                        <p class="price">MXN$ 4,356</p>
+                        <button class="btn-book" onclick="seleccionarHotel('Acapulco Mar Azul')">Reservar Ahora</button>
+                    </div>
+                </div>
+
+                <div class="hotel-card">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600" alt="Cancún Costa Serena">
+                    <div class="card-body">
+                        <h3>Cancún Costa Serena</h3>
+                        <p class="location">Cancún, Quintana Roo</p>
+                        <div class="rating"><span class="badge-rating">9.0</span> ★★★★★</div>
+                        <p class="price-info">1 noche, 2 personas desde</p>
+                        <p class="price">MXN$ 5,500</p>
+                        <button class="btn-book" onclick="seleccionarHotel('Cancún Costa Serena')">Reservar Ahora</button>
+                    </div>
+                </div>
+
+                <div class="hotel-card">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=600" alt="Vallarta Brisa Dorada">
+                    <div class="card-body">
+                        <h3>Vallarta Brisa Dorada</h3>
+                        <p class="location">Puerto Vallarta, Jalisco</p>
+                        <div class="rating"><span class="badge-rating">8.1</span> ★★★★★</div>
+                        <p class="price-info">1 noche, 2 personas desde</p>
+                        <p class="price">MXN$ 5,352</p>
+                        <button class="btn-book" onclick="seleccionarHotel('Vallarta Brisa Dorada')">Reservar Ahora</button>
+                    </div>
+                </div>
+
+                <div class="hotel-card">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600" alt="Ixtapa Bahía Sol">
+                    <div class="card-body">
+                        <h3>Ixtapa Bahía Sol</h3>
+                        <p class="location">Ixtapa Zihuatanejo, Guerrero</p>
+                        <div class="rating"><span class="badge-rating">8.4</span> ★★★★★</div>
+                        <p class="price-info">1 noche, 2 personas desde</p>
+                        <p class="price">MXN$ 2,047</p>
+                        <button class="btn-book" onclick="seleccionarHotel('Ixtapa Bahía Sol')">Reservar Ahora</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seccion-formulario" class="card hidden">
+            <div class="form-header">
+                <h2>Completar Reserva para: <span id="hotel-seleccionado-nombre" style="color: #18bc9c;"></span></h2>
+                <button class="btn-close" onclick="cerrarFormulario()">✕</button>
+            </div>
+            <form id="form-reserva">
+                <div class="form-group">
+                    <label for="nombreCliente">Nombre Completo del Huésped:</label>
+                    <input type="text" id="nombreCliente" required placeholder="Ej. Jocelin Pérez">
+                </div>
+
+                <div class="form-group">
+                    <label for="correoCliente">Correo Electrónico:</label>
+                    <input type="email" id="correoCliente" required placeholder="ejemplo@correo.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fechaIngreso">Fecha de Entrada:</label>
+                        <input type="date" id="fechaIngreso" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaSalida">Fecha de Salida:</label>
+                        <input type="date" id="fechaSalida" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Confirmar y Guardar Reserva</button>
+            </form>
+        </section>
+
+        <section id="lista-reservas" class="card">
+            <h2>Reservas Activas en PostgreSQL</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Hotel</th>
+                            <th>Huésped</th>
+                            <th>Correo</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-cuerpo">
+                        <tr>
+                            <td>1</td>
+                            <td>Cancún Costa Serena</td>
+                            <td>Juan Pérez</td>
+                            <td>juan@mail.com</td>
+                            <td>2026-06-01</td>
+                            <td>2026-06-05</td>
+                            <td><button class="btn-action btn-delete">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // URL base de tu API en Spring Boot
+        const API_URL = "http://localhost:8082/api/reservas";
+
+        // Al cargar la página, traemos las reservas que ya existan en la base de datos
+        document.addEventListener("DOMContentLoaded", listarReservas);
+
+        // 1. Función para abrir el formulario al elegir un hotel
+        function seleccionarHotel(nombreHotel) {
+            document.getElementById('hotel-seleccionado-nombre').innerText = nombreHotel;
+            const seccionForm = document.getElementById('seccion-formulario');
+            seccionForm.classList.remove('hidden');
+            seccionForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función para cerrar el formulario manualmente
+        function cerrarFormulario() {
+            document.getElementById('seccion-formulario').classList.add('hidden');
+            document.getElementById('form-reserva').reset();
+        }
+
+        // 2. ESCUCHAR EL EVENTO SUBMIT DEL FORMULARIO (GUARDAR EN POSTGRESQL)
+        document.getElementById('form-reserva').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+
+            // Juntamos los datos de los inputs en un objeto de JS
+            const datosReserva = {
+                hotel: document.getElementById('hotel-seleccionado-nombre').innerText,
+                nombreCliente: document.getElementById('nombreCliente').value,
+                correoCliente: document.getElementById('correoCliente').value,
+                fechaIngreso: document.getElementById('fechaIngreso').value,
+                fechaSalida: document.getElementById('fechaSalida').value
+            };
+
+            try {
+                // Hacemos la petición POST al backend enviando el JSON
+                const respuesta = await fetch(`${API_URL}/guardar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosReserva)
+                });
+
+                if (respuesta.ok) {
+                    alert("¡Reserva confirmada y guardada con éxito!");
+                    cerrarFormulario();
+                    listarReservas(); // Recargamos la tabla para ver la nueva fila
+                } else {
+                    alert("Hubo un problema al guardar la reserva.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("No se pudo conectar con el servidor backend.");
+            }
+        });
+
+        // 3. FUNCIÓN PARA TRAER LAS RESERVAS (GET) Y MOSTRARLAS EN LA TABLA
+        async function listarReservas() {
+            try {
+                const respuesta = await fetch(`${API_URL}/listar`);
+                const reservas = await respuesta.json();
+                
+                const tablaCuerpo = document.getElementById('tabla-cuerpo');
+                tablaCuerpo.innerHTML = ''; // Limpiamos las filas estáticas anteriores
+
+                if (reservas.length === 0) {
+                    tablaCuerpo.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No hay reservas registradas en este momento.</td></tr>`;
+                    return;
+                }
+
+                // Generamos una fila por cada reserva que venga de PostgreSQL
+                reservas.forEach(reserva => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${reserva.id}</td>
+                        <td><strong>${reserva.hotel}</strong></td>
+                        <td>${reserva.nombreCliente}</td>
+                        <td>${reserva.correoCliente}</td>
+                        <td>${reserva.fechaIngreso}</td>
+                        <td>${reserva.fechaSalida}</td>
+                        <td>
+                            <button class="btn-action btn-delete" onclick="cancelarReserva(${reserva.id})">Cancelar</button>
+                        </td>
+                    `;
+                    tablaCuerpo.appendChild(fila);
+                });
+            } catch (error) {
+                console.error("Error al listar:", error);
+            }
+        }
+
+        // 4. FUNCIÓN PARA CANCELAR/ELIMINAR UNA RESERVA (DELETE)
+        async function cancelarReserva(id) {
+            if (!confirm("¿Estás segura de que deseas cancelar esta reserva?")) return;
+
+            try {
+                const respuesta = await fetch(`${API_URL}/cancelar/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (respuesta.ok) {
+                    alert("Reserva cancelada correctamente.");
+                    listarReservas(); // Volvemos a listar para actualizar la tabla
+                } else {
+                    alert("No se pudo cancelar la reserva.");
+                }
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+            }
+        }
+    </script>

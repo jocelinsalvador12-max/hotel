@@ -1,0 +1,53 @@
+import simpy
+import random
+
+# --- CONFIGURACIÓN DE LA SIMULACIÓN ---
+SEMILLA = 42
+SERVIDORES_CLOUD = 3       # Cantidad de contenedores/servidores contratados
+TIEMPO_PROCESAMIENTO = 5   # Tiempo promedio (segundos) que toma un Check-in
+INTERVALO_LLEGADA = 2      # Cada cuántos segundos llega un nuevo huésped
+TIEMPO_SIMULACION = 60     # Tiempo límite del experimento en segundos virtuales
+
+tiempos_espera = []
+clientes_atendidos = 0
+clientes_rechazados_lentitud = 0
+
+def proceso_registro_hotel(env, nombre, servidor_cloud):
+    global clientes_atendidos, clientes_rechazados_lentitud
+    tiempo_llegada = env.now
+    print(f"[{tiempo_llegada:.2f}s] Huésped {nombre} ingresa a la web del hotel.")
+    
+    with servidor_cloud.request() as peticion:
+        # El cliente abandona si el servidor tarda más de 8 segundos en responder (Timeout)
+        resultado = yield peticion | env.timeout(8)
+        
+        if peticion in resultado:
+            tiempo_espera = env.now - tiempo_llegada
+            tiempos_espera.append(tiempo_espera)
+            print(f"   --> [{env.now:.2f}s] Servidor Cloud asignado a {nombre}. Esperó: {tiempo_espera:.2f}s")
+            
+            # Simular tiempo de ejecución real (pago, base de datos)
+            tiempo_ejecucion = random.normalvariate(TIEMPO_PROCESAMIENTO, 1)
+            yield env.timeout(max(0.5, tiempo_ejecucion))
+            
+            print(f"   <-- [{env.now:.2f}s] {nombre} finalizó su registro con éxito.")
+            clientes_atendidos += 1
+        else:
+            print(f"   ❌ [{env.now:.2f}s] {nombre} abandonó la web: Error de servidor (Timeout).")
+            clientes_rechazados_lentitud += 1
+
+def generador_huespedes(env, servidor_cloud):
+    i = 0
+    while True:
+        yield env.timeout(random.expovariate(1.0 / INTERVALO_LLEGADA))
+        i += 1
+        env.process(proceso_registro_hotel(env, f"Huésped-{i}", servidor_cloud))
+
+# --- EJECUCIÓN ---
+random.seed(SEMILLA)
+env = simpy.Environment()
+servidor_cloud = simpy.Resource(env, capacity=SERVIDORES_CLOUD)
+env.process(generador_huespedes(env, servidor_cloud))
+env.run(until=TIEMPO_SIMULACION)
+
+print(f"\nRegistrados con éxito: {clientes_atendidos} | Perdidos por lentitud: {clientes_rechazados_lentitud}")
